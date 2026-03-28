@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RescueIQ - Emergency Medical Triage Assistant</title>
+    <meta name="description" content="AI-powered emergency medical triage assistant providing immediate analysis of medical conditions from text, images, or medical histories.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063176.png" type="image/x-icon">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="main-header" role="banner">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 8V16M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Rescue<span>IQ</span></h1>
+                    <p class="hero-subtitle">A Universal Bridge between Human Intent and Emergency Systems</p>
+                </div>
+            </div>
+            <div class="api-key-container">
+                <label for="api-key" class="sr-only">Gemini API Key</label>
+                <div class="key-input-wrapper">
+                    <input type="password" id="api-key" placeholder="Enter Gemini API Key" aria-labelledby="api-key-label">
+                    <button id="save-key" aria-label="Save Key">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    </button>
+                    <span id="api-key-label" hidden>Gemini API Key</span>
+                </div>
+                <p class="key-hint">Your key is stored locally for this session.</p>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <!-- Triage Input Section -->
+            <section class="input-section card" aria-labelledby="input-title">
+                <div class="section-header">
+                    <h2 id="input-title">Begin Analysis</h2>
+                    <p>Input messy symptoms, photos, or records. Watch how Gemini translates it into structured output.</p>
+                </div>
+
+                <div class="tabs" role="tablist">
+                    <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="text-panel" id="tab-text">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Messy Text Input
+                    </button>
+                    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="image-panel" id="tab-image">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        Medical Photo Upload
+                    </button>
+                    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="file-panel" id="tab-file">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        Medical History Upload
+                    </button>
+                </div>
+
+                <div id="text-panel" class="tab-panel active" role="tabpanel" aria-labelledby="tab-text">
+                    <div class="textarea-wrapper">
+                        <textarea id="symptom-text" placeholder="Explain the symptoms, current condition, or medical history..." aria-label="Symptom descriptions"></textarea>
+                        <button id="mic-btn" class="mic-btn" aria-label="Start Voice Input" title="Click to speak">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+                        </button>
+                    </div>
+                    <div id="voice-indicator" class="voice-indicator" hidden>Listening... Speak now.</div>
+                    
+                    <div class="demo-samples mt-3">
+                        <span class="demo-label">Demo Inputs:</span>
+                        <div class="demo-buttons">
+                            <button class="demo-btn" data-sample="heart">Heart attack symptoms</button>
+                            <button class="demo-btn" data-sample="accident">Accident injury</button>
+                            <button class="demo-btn" data-sample="fever">Fever case</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="image-panel" class="tab-panel" role="tabpanel" aria-labelledby="tab-image" hidden>
+                    <div class="drop-zone" id="image-drop-zone">
+                        <input type="file" id="image-input" accept="image/*" hidden>
+                        <div class="drop-zone-content">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <p>Upload a clear photo of the injury or symptom</p>
+                            <span>Click to browse</span>
+                        </div>
+                        <div id="image-preview" class="preview-area" hidden></div>
+                    </div>
+                </div>
+
+                <div id="file-panel" class="tab-panel" role="tabpanel" aria-labelledby="tab-file" hidden>
+                    <div class="drop-zone" id="file-drop-zone">
+                        <input type="file" id="file-input" accept=".pdf,.txt,.doc,.docx" hidden>
+                        <div class="drop-zone-content">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                            <p>Upload medical reports or history (PDF, DOCX, TXT)</p>
+                            <span>Click to browse</span>
+                        </div>
+                        <div id="file-preview" class="preview-area" hidden></div>
+                    </div>
+                </div>
+
+                <div class="action-footer">
+                    <button id="analyze-btn" class="primary-btn">
+                        <span class="btn-text">Analyze with Gemini AI</span>
+                        <div class="spinner" hidden></div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section (Initially Hidden) -->
+            <section id="results-section" class="results-grid" hidden>
+                <div class="full-width strong-output-message">
+                    ✨ <strong>Converted from unstructured input to structured action</strong>
+                </div>
+
+                <div class="full-width">
+                    <div class="analysis-status card" id="severity-card">
+                        <div class="ai-verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> AI Verified • <span class="verify-time"></span></div>
+                        <div class="severity-badge" id="severity-badge">--</div>
+                        <div class="status-content">
+                            <h3>Severity Assessment</h3>
+                            <p id="severity-description">Waiting for analysis...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card result-card" id="condition-card">
+                    <div class="ai-verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> AI Verified • <span class="verify-time"></span></div>
+                    <div class="card-icon blue">🩺</div>
+                    <div class="card-body">
+                        <h3>Potential Condition</h3>
+                        <p id="condition-explanation">Analysis in progress...</p>
+                    </div>
+                </div>
+
+                <div class="card result-card" id="action-card">
+                    <div class="ai-verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> AI Verified • <span class="verify-time"></span></div>
+                    <div class="card-icon red">🚨</div>
+                    <div class="card-body">
+                        <h3>Immediate Actions</h3>
+                        <ul id="action-plan">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card result-card" id="specialist-card">
+                    <div class="ai-verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> AI Verified • <span class="verify-time"></span></div>
+                    <div class="card-icon amber">👨‍⚕️</div>
+                    <div class="card-body">
+                        <h3>Recommended Specialist</h3>
+                        <p id="specialist-info">Loading...</p>
+                    </div>
+                </div>
+
+                <div class="card result-card full-width" id="summary-card">
+                    <div class="ai-verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> AI Verified • <span class="verify-time"></span></div>
+                    <div class="card-icon purple">📑</div>
+                    <div class="card-body">
+                        <h3>Medical Summary for Doctors</h3>
+                        <div class="json-output-wrapper">
+                            <pre id="medical-summary-json"></pre>
+                            <button id="copy-summary" class="secondary-btn small">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                Copy JSON
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="disclaimer full-width">
+                    <p><strong>⚠️ Disclaimer:</strong> This is AI assistance, not medical advice</p>
+                </div>
+            </section>
+
+            <!-- Error Notification -->
+            <div id="error-toast" class="toast error" hidden>
+                <div class="toast-content">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span id="error-message">Error message here</span>
+                </div>
+                <button class="toast-close" id="close-toast">&times;</button>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 RescueIQ Assistant • Powered by Gemini 2.0 Flash</p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
